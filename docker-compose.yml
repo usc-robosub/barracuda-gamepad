@@ -1,0 +1,11 @@
+services:
+  template-repo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    container_name: template-repo
+    tty: true
+    network_mode: host
+    volumes:
+      - $HOME/.ssh:/root/.ssh
