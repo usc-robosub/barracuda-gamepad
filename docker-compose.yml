@@ -1,11 +1,11 @@
 services:
-  template-repo:
+  barracuda-gamepad:
     build:
       context: .
       dockerfile: Dockerfile
     user: root
-    container_name: template-repo
+    container_name: barracuda-gamepad
     tty: true
     network_mode: host
-    volumes:
-      - $HOME/.ssh:/root/.ssh
+    # volumes:
+    #  - $HOME/.ssh:/root/.ssh

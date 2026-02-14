@@ -2,7 +2,7 @@
 <launch>
   <!-- Example launch file for template-repo -->
   
-  <node name="example_node" pkg="example_package" type="example_node.py" output="screen">
+  <node name="joy_node" pkg="barracuda-gamepad" type="gamepad.cpp" output="screen">
     <rosparam>
       # Example parameters
       example_param: "Hello from launch file!"
