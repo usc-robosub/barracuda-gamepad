@@ -1,65 +1,41 @@
-#include <chrono>
 #include <memory>
-#include <string>
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "sensor_msgs/msg/joy.hpp"
+using std::placeholders::_1;
 
-using namespace std::chrono_literals;
-
-class JoyPublisherNode : public rclcpp::Node
+class Gamepad : public rclcpp::Node
 {
 public:
-    JoyPublisherNode()
-    : Node("joy_publisher_node")
+    Gamepad()
+    : Node("Gamepad_node")
     {
-        // Publisher to a string topic (similar to your Python example)
-        example_pub_ = this->create_publisher<std_msgs::msg::String>("example_topic", 10);
-
-        // Subscriber to joystick topic
-        joy_sub_ = this->create_subscription<sensor_msgs::msg::Joy>(
-            "/joy",
-            10,
-            std::bind(&JoyPublisherNode::joy_callback, this, std::placeholders::_1)
-        );
-
-        // Timer to periodically publish example messages
-        timer_ = this->create_wall_timer(
-            100ms, std::bind(&JoyPublisherNode::timer_callback, this)
-        );
-
-        RCLCPP_INFO(this->get_logger(), "JoyPublisherNode started!");
+        subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
+            "/joy", 10, std::bind(&Gamepad::joy_callback, this, _1));
     }
 
 private:
-    void timer_callback()
+    void joy_callback(const sensor_msgs::msg::Joy::SharedPtr msg)
     {
-        auto msg = std_msgs::msg::String();
-        msg.data = "Hello from ROS 2! Time: " + std::to_string(this->now().seconds());
-        example_pub_->publish(msg);
-        RCLCPP_INFO(this->get_logger(), "Published: '%s'", msg.data.c_str());
-    }
-
-    void joy_callback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
-    {
-        // Print first joystick axis and button as a demo
-        if (!joy_msg->axes.empty() && !joy_msg->buttons.empty())
-        {
-            RCLCPP_INFO(this->get_logger(),
-                        "Joy axes[0]: %f, buttons[0]: %d",
-                        joy_msg->axes[0], joy_msg->buttons[0]);
+        std::string pressed;
+        for (size_t i = 0; i < msg->buttons.size(); ++i) {
+            if (msg->buttons[i] == 1) pressed += std::to_string(i) + " ";
         }
+        RCLCPP_INFO(this->get_logger(), "Buttons pressed: [%s]", pressed.c_str());
+        
+        std::string axes_str;
+        for (size_t i = 0; i < msg->axes.size(); ++i) {
+            axes_str += std::to_string(msg->axes[i]) + " ";
+        }
+        RCLCPP_INFO(this->get_logger(), "Axes: [%s]", axes_str.c_str());
     }
 
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr example_pub_;
-    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub_;
-    rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr subscription_;
 };
 
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<JoyPublisherNode>());
+    rclcpp::spin(std::make_shared<Gamepad>());
     rclcpp::shutdown();
     return 0;
 }
