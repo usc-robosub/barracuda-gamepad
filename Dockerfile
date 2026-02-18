@@ -30,16 +30,18 @@ RUN apt-get update && apt-get install -y \
     wget \
     # python3-colcon-common-extensions \
     build-essential \
+    libspnav-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create workspace
 WORKDIR /ros2_ws
 
 # Copy your project into workspace src folder
-COPY . /ros2_ws/src/
+COPY  . /ros2_ws/src
 
 # Build workspace
-RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build"
+RUN /bin/bash -c "source /opt/ros/humble/setup.bash && colcon build --packages-skip joy_linux wiimote miimote_msgs space_nav sdl2_vendor"
+
 
 # Source ROS 2 automatically when container starts
 CMD ["bash", "-c", "source /opt/ros/humble/setup.bash && source /ros2_ws/install/setup.bash && bash"]

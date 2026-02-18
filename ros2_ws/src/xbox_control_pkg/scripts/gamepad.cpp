@@ -1,7 +1,6 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joy.hpp"
-#include "joy/joy.hpp"
 
 using std::placeholders::_1;
 
@@ -9,7 +8,7 @@ class Gamepad : public rclcpp::Node
 {
 public:
     Gamepad()
-    : Node("Gamepad_node")
+    : Node("gamepad_node")
     {
         subscription_ = this->create_subscription<sensor_msgs::msg::Joy>(
             "/joy", 10, std::bind(&Gamepad::joy_callback, this, _1));
