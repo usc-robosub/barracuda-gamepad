@@ -1,6 +1,8 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joy.hpp"
+#include "joy/joy.hpp"
+
 using std::placeholders::_1;
 
 class Gamepad : public rclcpp::Node
